@@ -13,8 +13,8 @@ const formatDate = () => {
 
 const postNote = async (userId, title, text) => {
   try {
-    const note = notesDB.insert({
-      id: userId, //DETTA ID ÄR SAMMA SOM I usersDB
+    const note = await notesDB.insert({
+      id: userId, //DETTA ID ÄR SAMMA SOM I usersDB (personens db_id)
       title: title,
       text: text,
       createdAt: formatDate(),
@@ -27,4 +27,28 @@ const postNote = async (userId, title, text) => {
   }
 };
 
-module.exports = { postNote };
+const findExistingNote = async (noteId) => {
+  const existingNote = await notesDB.findOne({ _id: noteId });
+  return existingNote;
+};
+
+const putNote = async (noteId, title, text) => {
+  console.log("noteId in putNote:", noteId);
+
+  const modifiedAt = formatDate();
+
+  try {
+    const updateNote = await notesDB.update(
+      { _id: noteId },
+      { $set: { title, text, modifiedAt } }
+    );
+    console.log(updateNote);
+
+    return updateNote;
+  } catch (err) {
+    console.log(err, "Something went wrong");
+    throw err;
+  }
+};
+
+module.exports = { postNote, putNote, findExistingNote };

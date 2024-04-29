@@ -1,7 +1,11 @@
 const { Router } = require("express");
 const { authenticate } = require("../middlewares/AuthMiddleware");
 const router = Router();
-const { postNote } = require("../services/notesServices");
+const {
+  postNote,
+  putNote,
+  findExistingNote,
+} = require("../services/notesServices");
 
 // Alla router.(get,put,post,delete) för notes
 
@@ -38,7 +42,40 @@ router.post("/notes", authenticate, async (req, res) => {
   }
 });
 
-router.put("/notes", (req, res) => {});
+router.put("/notes", authenticate, async (req, res) => {
+  const { noteId, title, text } = req.body;
+
+  try {
+    const existingNote = await findExistingNote(noteId);
+    if (!existingNote) {
+      return res.status(404).json({ success: false, error: "Note not found" });
+    }
+    if (existingNote.title === title && existingNote.text === text) {
+      return res.status(200).json({
+        success: true,
+        message: "No changes needed, note was not modified",
+        data: existingNote,
+      });
+    }
+
+    const modifiedNote = await putNote(noteId, title, text);
+    if (modifiedNote) {
+      return res.status(200).json({
+        success: true,
+        message: "Note successfully modified",
+        data: modifiedNote,
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, error: "Unable to update note" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.delete("/notes", (req, res) => {});
 
 module.exports = router;
