@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 //  Researcha vettig struktur för middleware
 
 const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers["authorization"];
 
   if (!authHeader) {
     return res
@@ -25,7 +25,7 @@ const authenticate = (req, res, next) => {
   });
 };
 
-const validateToken = (req, res, next) => {
+/* const validateToken = (req, res, next) => {
   const token = req.headers.authorization;
 
   if (!token) {
@@ -40,6 +40,6 @@ const validateToken = (req, res, next) => {
     req.user = decoded;
     next();
   });
-};
+}; */
 
-module.exports = { authenticate, validateToken };
+module.exports = { authenticate };

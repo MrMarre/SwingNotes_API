@@ -5,10 +5,18 @@ const { postNote } = require("../services/notesServices");
 
 // Alla router.(get,put,post,delete) för notes
 
-router.get("/notes", (req, res) => {});
+// Hämtar alla notes
+router.get("/notes", async (req, res) => {
+  try {
+    const docs = await notesDB.find({});
+    res.status(200).json({ success: true, notes: docs });
+  } catch (err) {
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
 
 router.post("/notes", authenticate, async (req, res) => {
-  const { title, text } = req.body;
+  const { title, text, createdAt, modifiedAt } = req.body;
   const userId = req.user.id;
 
   try {
@@ -23,7 +31,7 @@ router.post("/notes", authenticate, async (req, res) => {
         .json({ error: "The text must not exceed 300 characters" });
     }
 
-    const newNote = await postNote(userId, title, text);
+    const newNote = await postNote(userId, title, text, createdAt, modifiedAt);
     res.status(201).json(newNote);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
