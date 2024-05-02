@@ -1,0 +1,512 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Swing notes API",
+    "description": "Create your own notebook with Swing notes API",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8000",
+  "basePath": "/api",
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Use Bearer token to authenticate requests.\\nFormat should look like `Bearer 'TOKEN HERE'`"
+    }
+  },
+  "paths": {
+    "/user/signup": {
+      "post": {
+        "description": "Creates a user",
+        "tags": ["User"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "example": "grannen grannsson"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "hemligtlösenord123"
+                }
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ok",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User was successfully created"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - \"All fields (username and password) are required\""
+          },
+          "409": {
+            "description": "User already exists"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "description": "Login with created user",
+        "tags": ["User"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "example": "Grannen Grannsson"
+                },
+                "password": {
+                  "example": "hemligtlösenord123"
+                }
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Logged in successfully"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/notes": {
+      "post": {
+        "description": "Post a note",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": ["Notes"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Example title of note"
+                },
+                "text": {
+                  "type": "string",
+                  "example": "Example description of note"
+                }
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully creation of note",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "example": "2htj6WPIL22BJoFi"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Example title of note"
+                },
+                "text": {
+                  "type": "string",
+                  "example": "Example description of note"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "example": "2024-05-02 at 14:28:35"
+                },
+                "modifiedAt": {
+                  "type": "string",
+                  "example": "2024-05-02 at 14:28:35"
+                },
+                "_id": {
+                  "type": "string",
+                  "example": "i1KidDcWgeu0nSMi"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - \"Title and text is required and may not exceed 50 and 300 characters respectively\""
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "description": "Modify a note",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": ["Notes"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "noteId": {
+                  "type": "string",
+                  "example": "OilmgYJnvs4Djvut"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Example title of note"
+                },
+                "text": {
+                  "type": "string",
+                  "example": "Example text of a note"
+                }
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully modified note",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Note successfully modified"
+                },
+                "data": {
+                  "type": "number",
+                  "example": 1
+                },
+                "note": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "example": "2htj6WPIL22BJoFi"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Example title of note"
+                    },
+                    "text": {
+                      "type": "string",
+                      "example": "Example description of note"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-05-02 at 14:28:35"
+                    },
+                    "modifiedAt": {
+                      "type": "string",
+                      "example": "2024-05-03 at 14:35:20"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Invalid token"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Note not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a note",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": ["Notes"],
+        "parameters": [
+          {
+            "name": "noteId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "The note was successfully removed"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "string",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Invalid token"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Note not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "get": {
+        "description": "Get all notes based on userId",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": ["Notes"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "example": "2htj6WPIL22BJoFi"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "Example title"
+                      },
+                      "text": {
+                        "type": "string",
+                        "example": "Example text"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-05-02 at 15:16:40"
+                      },
+                      "modifiedAt": {
+                        "type": "string",
+                        "example": "2024-05-04 at 15:17:55"
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "yWmXTif0SuYf0rjy"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Note not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/notes/search": {
+      "get": {
+        "description": "Search and find based on title",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": ["Notes"],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string",
+                        "example": "2htj6WPIL22BJoFi"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "SEARCHABLE KEY!"
+                      },
+                      "text": {
+                        "type": "string",
+                        "example": "Example text"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2024-05-02 at 15:16:40"
+                      },
+                      "modifiedAt": {
+                        "type": "string",
+                        "example": "2024-05-04 at 15:17:55"
+                      },
+                      "_id": {
+                        "type": "string",
+                        "example": "yWmXTif0SuYf0rjy"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "No note found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  }
+}

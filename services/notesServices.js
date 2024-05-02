@@ -1,6 +1,4 @@
 // Alla hjälpfunktioner som rör notes och db
-const { v4: uuidv4 } = require("uuid");
-const moment = require("moment");
 const { notesDB } = require("../models/notesModel");
 const { usersDB } = require("../models/notesModel");
 
@@ -60,4 +58,22 @@ const getUserNotes = async (userId) => {
   }
 };
 
-module.exports = { postNote, putNote, findExistingNote, getUserNotes };
+const searchNotesByTitle = async (userId, title) => {
+  const regex = new RegExp(title, "i");
+  try {
+    const notes = await notesDB.find({ userId: userId, title: regex });
+
+    return notes;
+  } catch (err) {
+    console.error("error searching notes", err);
+    throw err;
+  }
+};
+
+module.exports = {
+  postNote,
+  putNote,
+  findExistingNote,
+  getUserNotes,
+  searchNotesByTitle,
+};

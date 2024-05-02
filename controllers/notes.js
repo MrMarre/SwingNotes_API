@@ -6,20 +6,11 @@ const {
   putNote,
   findExistingNote,
   getUserNotes,
+  searchNotesByTitle,
 } = require("../services/notesServices");
 const { notesDB } = require("../models/notesModel");
 
 // Alla router.(get,put,post,delete) för notes
-
-// Hämtar alla notes
-router.get("/notes", async (req, res) => {
-  try {
-    const docs = await notesDB.find({});
-    res.status(200).json({ success: true, notes: docs });
-  } catch (err) {
-    res.status(500).json({ success: false, error: "Internal server error" });
-  }
-});
 
 router.post("/notes", authenticate, async (req, res) => {
   const { title, text } = req.body;
@@ -62,7 +53,7 @@ router.put("/notes", authenticate, async (req, res) => {
     }
     if (req.user.id !== existingNote.userId) {
       return res
-        .status(403)
+        .status(401)
         .json({ success: false, message: "Unauthorized to modify this note" });
     }
     if (existingNote.title === title && existingNote.text === text) {
@@ -126,6 +117,29 @@ router.delete("/notes/:noteId", authenticate, async (req, res) => {
   }
 });
 
+router.get("/notes/search", authenticate, async (req, res) => {
+  const userId = req.user.id;
+
+  const { title } = req.query;
+
+  if (!title) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Title param is required" });
+  }
+  try {
+    const notes = await searchNotesByTitle(userId, title);
+    if (notes.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No matching notes found" });
+    } else {
+      return res.status(201).json({ success: true, data: notes });
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 router.get("/notes/:userId", authenticate, async (req, res) => {
   const userId = req.params.userId;
 
