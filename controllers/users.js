@@ -1,12 +1,8 @@
 const { Router } = require("express");
-const auth = require("../middlewares/AuthMiddleware");
 const { findUserByUsername, storeUser } = require("../services/userServices");
-const { comparePassword } = require("../bcrypt");
+const { comparePassword } = require("../middlewares/bcrypt");
 const jwt = require("jsonwebtoken");
 const router = Router();
-
-// Alla router.(get,put,post,delete) för user
-// Typ login och signup
 
 router.post("/user/signup", async (req, res) => {
   const { username, password } = req.body;
@@ -69,7 +65,5 @@ router.post("/user/login", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
-router.get("/notes/search", (req, res) => {});
 
 module.exports = router;

@@ -1,10 +1,5 @@
-const { hashedPassword, comparePassword } = require("../bcrypt");
+const { hashedPassword } = require("../middlewares/bcrypt");
 const { usersDB } = require("../models/usersModel");
-// Alla funktioner som berör user och db
-
-// Initiering av databas sker här
-
-// Kanske lite middleware för att underlätta checks på signup och login? Cleanare kod blir det minsann
 
 const storeUser = async (username, password) => {
   const encryptedPassword = await hashedPassword(password);
